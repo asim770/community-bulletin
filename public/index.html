@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Community Bulletin Board — Post events, announcements, jobs, and more for your community.">
+  <title>Community Bulletin Board</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- ═══════════ NAVBAR ═══════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="#" class="navbar-brand" id="nav-logo">
+        <span class="logo-icon">🏛️</span>
+        <span class="logo-text">Bulletin<span class="logo-accent">Board</span></span>
+      </a>
+
+      <div class="navbar-search" id="navbar-search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search posts..." autocomplete="off">
+      </div>
+
+      <div class="navbar-actions" id="navbar-actions">
+        <!-- Filled dynamically by JS -->
+      </div>
+
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <div class="hero-shape shape-1"></div>
+      <div class="hero-shape shape-2"></div>
+      <div class="hero-shape shape-3"></div>
+    </div>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Your Community,<br>
+        <span class="gradient-text">Connected.</span>
+      </h1>
+      <p class="hero-subtitle">Share events, announcements, jobs, and more with your neighbors. Stay informed, stay connected.</p>
+      <button class="btn btn-primary btn-lg" id="hero-cta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        Create a Post
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
+  <main class="main-content" id="main-content">
+    <!-- Category Filter Bar -->
+    <div class="filter-bar" id="filter-bar">
+      <div class="filter-pills">
+        <button class="pill active" data-category="">All</button>
+        <button class="pill" data-category="Events">
+          <span class="pill-dot" style="background: #e94560"></span>Events
+        </button>
+        <button class="pill" data-category="Announcements">
+          <span class="pill-dot" style="background: #f4a261"></span>Announcements
+        </button>
+        <button class="pill" data-category="General">
+          <span class="pill-dot" style="background: #2ec4b6"></span>General
+        </button>
+        <button class="pill" data-category="Jobs">
+          <span class="pill-dot" style="background: #7b68ee"></span>Jobs
+        </button>
+        <button class="pill" data-category="Lost & Found">
+          <span class="pill-dot" style="background: #ff9ff3"></span>Lost &amp; Found
+        </button>
+      </div>
+
+      <div class="sort-controls">
+        <select id="sort-select" class="sort-select">
+          <option value="latest">Latest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="posts-grid" id="posts-grid">
+      <!-- Skeleton loaders shown initially -->
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-container" id="load-more-container" style="display: none;">
+      <button class="btn btn-outline" id="load-more-btn">
+        Load More Posts
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <div class="empty-icon">📭</div>
+      <h3>No posts yet</h3>
+      <p>Be the first to share something with the community!</p>
+    </div>
+  </main>
+
+  <!-- ═══════════ AUTH MODAL ═══════════ -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal auth-modal">
+      <button class="modal-close" id="auth-modal-close">&times;</button>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Log In</button>
+        <button class="auth-tab" data-tab="register">Sign Up</button>
+        <div class="auth-tab-indicator" id="auth-tab-indicator"></div>
+      </div>
+
+      <!-- Login Form -->
+      <form class="auth-form" id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="login-submit-btn">
+          <span class="btn-text">Log In</span>
+          <span class="btn-spinner" style="display:none;"></span>
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form class="auth-form" id="register-form" style="display: none;">
+        <div class="form-group">
+          <label for="register-username">Username</label>
+          <input type="text" id="register-username" placeholder="johndoe" required minlength="3">
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" placeholder="Min 6 characters" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="register-submit-btn">
+          <span class="btn-text">Create Account</span>
+          <span class="btn-spinner" style="display:none;"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════ CREATE/EDIT POST MODAL ═══════════ -->
+  <div class="modal-overlay" id="post-modal">
+    <div class="modal post-modal">
+      <button class="modal-close" id="post-modal-close">&times;</button>
+      <h2 class="modal-title" id="post-modal-title">Create a Post</h2>
+
+      <form id="post-form" enctype="multipart/form-data">
+        <input type="hidden" id="post-edit-id" value="">
+
+        <div class="form-group">
+          <label for="post-title">Title</label>
+          <input type="text" id="post-title" placeholder="What's happening?" required minlength="3" maxlength="120">
+        </div>
+
+        <div class="form-group">
+          <label for="post-description">Description</label>
+          <textarea id="post-description" rows="4" placeholder="Tell us more..." required minlength="10" maxlength="2000"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-half">
+            <label for="post-category">Category</label>
+            <select id="post-category" required>
+              <option value="">Select category</option>
+              <option value="Events">Events</option>
+              <option value="Announcements">Announcements</option>
+              <option value="General">General</option>
+              <option value="Jobs">Jobs</option>
+              <option value="Lost & Found">Lost & Found</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Image (optional)</label>
+          <div class="image-upload-zone" id="image-upload-zone">
+            <input type="file" id="post-image" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+            <div class="upload-placeholder" id="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <path d="m21 15-5-5L5 21"></path>
+              </svg>
+              <p>Click or drag an image here</p>
+              <span>JPEG, PNG, GIF, WebP — Max 5MB</span>
+            </div>
+            <div class="upload-preview" id="upload-preview" style="display: none;">
+              <img id="preview-img" src="" alt="Preview">
+              <button type="button" class="remove-image-btn" id="remove-image-btn">&times;</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="post-submit-btn">
+          <span class="btn-text">Publish Post</span>
+          <span class="btn-spinner" style="display:none;"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════ POST DETAIL MODAL ═══════════ -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="modal detail-modal">
+      <button class="modal-close" id="detail-modal-close">&times;</button>
+      <div id="detail-content">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TOAST CONTAINER ═══════════ -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ═══════════ SCRIPTS ═══════════ -->
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/comments.js"></script>
+  <script src="/js/posts.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
