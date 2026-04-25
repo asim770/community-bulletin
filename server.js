@@ -39,8 +39,14 @@ app.use('/api/posts', postRoutes);
 app.use('/api/posts', commentRoutes);  // /api/posts/:id/comments
 app.use('/api/posts', likeRoutes);     // /api/posts/:id/like
 
+// ─── Home Route ────────────────────────────────────────
+// Explicitly serve index.html on the root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // ─── SPA Fallback ──────────────────────────────────────
-// For any non-API route, serve the frontend
+// For any other non-API route, serve the frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
