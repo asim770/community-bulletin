@@ -46,22 +46,30 @@ if (hasCloudinary) {
     }
   });
 } else {
-  console.log('📁 Using local disk storage (Cloudinary credentials missing)');
-  const fs = require('fs');
-  const uploadPath = path.join(__dirname, '../public/uploads');
-  if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-  }
-
-  storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, `${uuidv4()}${ext}`);
+  // Use local disk storage only if NOT on Vercel
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    console.error('❌ ERROR: Cloudinary configuration is missing for production/Vercel deployment.');
+    // We don't throw here to prevent the whole app from crashing, 
+    // but the upload middleware will fail if called.
+    storage = multer.memoryStorage(); // Fallback to memory so it doesn't crash on start
+  } else {
+    console.log('📁 Using local disk storage (Cloudinary credentials missing)');
+    const fs = require('fs');
+    const uploadPath = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
     }
-  });
+
+    storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, uploadPath);
+      },
+      filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `${uuidv4()}${ext}`);
+      }
+    });
+  }
 }
 
 const fileFilter = (req, file, cb) => {
