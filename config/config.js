@@ -10,7 +10,7 @@ module.exports = {
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_FILE_SIZE: 4 * 1024 * 1024, // 4MB (Vercel has a 4.5MB total limit)
   POSTS_PER_PAGE: 8,
   CATEGORIES: ['Events', 'Announcements', 'General', 'Jobs', 'Lost & Found']
 };

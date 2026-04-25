@@ -96,6 +96,7 @@ function handleUpload(req, res, next) {
       }
       return res.status(400).json({ error: err.message });
     } else if (err) {
+      console.error('📤 Upload Error:', err.message);
       return res.status(400).json({ error: err.message });
     }
     next();

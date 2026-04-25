@@ -145,11 +145,16 @@ async function createPost(req, res) {
     // Handle image upload
     let imageUrl = null;
     if (req.file) {
+      // Defensive check for path/filename (essential for serverless)
+      const filePath = req.file.path || '';
+      const fileName = req.file.filename || '';
+      
       // Cloudinary stores URL in 'path', Multer disk stores filename in 'filename'
-      imageUrl = req.file.path.startsWith('http') 
-        ? req.file.path 
-        : `/uploads/${req.file.filename}`;
-      console.log('🖼️ Image uploaded to:', imageUrl);
+      imageUrl = filePath.startsWith('http') 
+        ? filePath 
+        : (fileName ? `/uploads/${fileName}` : null);
+        
+      console.log('🖼️ Post Image:', imageUrl ? 'Attached' : 'None');
     }
 
     const post = await Post.create({
