@@ -6,6 +6,23 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const Like = require('../models/Like');
 const { CATEGORIES, POSTS_PER_PAGE } = require('../config/config');
+const cloudinary = require('cloudinary').v2;
+
+/**
+ * Helper to upload buffer to Cloudinary
+ */
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: 'community-bulletin' },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
 
 /**
  * GET /api/posts
@@ -145,16 +162,16 @@ async function createPost(req, res) {
     // Handle image upload
     let imageUrl = null;
     if (req.file) {
-      // Defensive check for path/filename (essential for serverless)
-      const filePath = req.file.path || '';
-      const fileName = req.file.filename || '';
-      
-      // Cloudinary stores URL in 'path', Multer disk stores filename in 'filename'
-      imageUrl = filePath.startsWith('http') 
-        ? filePath 
-        : (fileName ? `/uploads/${fileName}` : null);
-        
-      console.log('🖼️ Post Image:', imageUrl ? 'Attached' : 'None');
+      if (req.file.buffer) {
+        // Cloudinary manual upload from memory buffer
+        console.log('☁️ Uploading buffer to Cloudinary...');
+        const result = await uploadToCloudinary(req.file.buffer);
+        imageUrl = result.secure_url;
+      } else {
+        // Local disk storage fallback
+        imageUrl = `/uploads/${req.file.filename}`;
+      }
+      console.log('🖼️ Post Image:', imageUrl);
     }
 
     const post = await Post.create({
@@ -219,9 +236,13 @@ async function updatePost(req, res) {
     if (description) post.description = description;
     if (category) post.category = category;
     if (req.file) {
-      post.imageUrl = req.file.path.startsWith('http') 
-        ? req.file.path 
-        : `/uploads/${req.file.filename}`;
+      if (req.file.buffer) {
+        console.log('☁️ Updating image on Cloudinary...');
+        const result = await uploadToCloudinary(req.file.buffer);
+        post.imageUrl = result.secure_url;
+      } else {
+        post.imageUrl = `/uploads/${req.file.filename}`;
+      }
       console.log('🖼️ Image updated to:', post.imageUrl);
     }
 

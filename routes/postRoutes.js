@@ -7,7 +7,6 @@ const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const { 
   MAX_FILE_SIZE, 
   CLOUDINARY_CLOUD_NAME, 
@@ -30,28 +29,17 @@ cloudinary.config({
   api_key: CLOUDINARY_API_KEY,
   api_secret: CLOUDINARY_API_SECRET
 });
-
-// Configure Storage
 let storage;
 const hasCloudinary = CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET;
 
 if (hasCloudinary) {
-  console.log('☁️ Using Cloudinary storage');
-  storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: 'community-bulletin',
-      allowed_formats: ['jpg', 'png', 'gif', 'webp'],
-      public_id: (req, file) => `${uuidv4()}`
-    }
-  });
+  console.log('☁️ Using Cloudinary storage (Buffer Mode)');
+  storage = multer.memoryStorage();
 } else {
   // Use local disk storage only if NOT on Vercel
   if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
     console.error('❌ ERROR: Cloudinary configuration is missing for production/Vercel deployment.');
-    // We don't throw here to prevent the whole app from crashing, 
-    // but the upload middleware will fail if called.
-    storage = multer.memoryStorage(); // Fallback to memory so it doesn't crash on start
+    storage = multer.memoryStorage();
   } else {
     console.log('📁 Using local disk storage (Cloudinary credentials missing)');
     const fs = require('fs');
