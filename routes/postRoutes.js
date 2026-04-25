@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -30,15 +31,38 @@ cloudinary.config({
   api_secret: CLOUDINARY_API_SECRET
 });
 
-// Configure Cloudinary Storage for Multer
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'community-bulletin',
-    allowed_formats: ['jpg', 'png', 'gif', 'webp'],
-    public_id: (req, file) => `${uuidv4()}`
+// Configure Storage
+let storage;
+const hasCloudinary = CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET;
+
+if (hasCloudinary) {
+  console.log('☁️ Using Cloudinary storage');
+  storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: 'community-bulletin',
+      allowed_formats: ['jpg', 'png', 'gif', 'webp'],
+      public_id: (req, file) => `${uuidv4()}`
+    }
+  });
+} else {
+  console.log('📁 Using local disk storage (Cloudinary credentials missing)');
+  const fs = require('fs');
+  const uploadPath = path.join(__dirname, '../public/uploads');
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
   }
-});
+
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, `${uuidv4()}${ext}`);
+    }
+  });
+}
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];

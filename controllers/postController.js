@@ -142,10 +142,14 @@ async function createPost(req, res) {
       return res.status(400).json({ error: `Invalid category. Must be one of: ${CATEGORIES.join(', ')}` });
     }
 
-    // Handle image upload (Cloudinary URL)
+    // Handle image upload
     let imageUrl = null;
     if (req.file) {
-      imageUrl = req.file.path;
+      // Cloudinary stores URL in 'path', Multer disk stores filename in 'filename'
+      imageUrl = req.file.path.startsWith('http') 
+        ? req.file.path 
+        : `/uploads/${req.file.filename}`;
+      console.log('🖼️ Image uploaded to:', imageUrl);
     }
 
     const post = await Post.create({
@@ -209,7 +213,12 @@ async function updatePost(req, res) {
     if (title) post.title = title;
     if (description) post.description = description;
     if (category) post.category = category;
-    if (req.file) post.imageUrl = req.file.path;
+    if (req.file) {
+      post.imageUrl = req.file.path.startsWith('http') 
+        ? req.file.path 
+        : `/uploads/${req.file.filename}`;
+      console.log('🖼️ Image updated to:', post.imageUrl);
+    }
 
     await post.save();
 
@@ -246,6 +255,13 @@ async function deletePost(req, res) {
     }
 
     // Owner or admin can delete
+    console.log('🗑️ Delete attempt:', { 
+      postId: req.params.id, 
+      userId: req.user.id, 
+      role: req.user.role, 
+      postOwner: post.userId.toString() 
+    });
+    
     if (post.userId.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'You can only delete your own posts.' });
     }
