@@ -142,10 +142,10 @@ async function createPost(req, res) {
       return res.status(400).json({ error: `Invalid category. Must be one of: ${CATEGORIES.join(', ')}` });
     }
 
-    // Handle image upload
+    // Handle image upload (Cloudinary URL)
     let imageUrl = null;
     if (req.file) {
-      imageUrl = `/uploads/${req.file.filename}`;
+      imageUrl = req.file.path;
     }
 
     const post = await Post.create({
@@ -209,7 +209,7 @@ async function updatePost(req, res) {
     if (title) post.title = title;
     if (description) post.description = description;
     if (category) post.category = category;
-    if (req.file) post.imageUrl = `/uploads/${req.file.filename}`;
+    if (req.file) post.imageUrl = req.file.path;
 
     await post.save();
 

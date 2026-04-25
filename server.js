@@ -1,15 +1,20 @@
 /**
- * Community Bulletin Board — Server Entry Point
+ * Community Bulletin Board — Server Entry Point (Vercel Optimized)
  * 
  * A full-stack web application for community posts, events, and announcements.
  * Built with Express.js and MongoDB.
+ * 
+ * Refactored for Vercel Serverless:
+ * - Removed local file system 'uploads' dependency.
+ * - Removed app.listen() for serverless compatibility.
+ * - Exported app for Vercel.
  */
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { PORT, UPLOAD_DIR, MONGO_URI } = require('./config/config');
+const { MONGO_URI } = require('./config/config');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -26,12 +31,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Ensure uploads directory exists
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-app.use('/uploads', express.static(path.join(__dirname, UPLOAD_DIR)));
 
 // ─── API Routes ────────────────────────────────────────
 app.use('/api/auth', authRoutes);
@@ -57,18 +56,22 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'An unexpected error occurred.' });
 });
 
-// ─── Connect to MongoDB & Start Server ─────────────────
+// ─── Connect to MongoDB & Start Server ──────────────
+// In a serverless environment (like Vercel), we export the app.
+// For local development, we start the server.
+const PORT = process.env.PORT || 3000;
+
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`\n🏛️  Community Bulletin Board`);
-      console.log(`   Server running at http://localhost:${PORT}`);
-      console.log(`   Database: ${MONGO_URI}`);
-      console.log(`   Press Ctrl+C to stop\n`);
-    });
+    // Start local server only if not in production/Vercel
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+      });
+    }
   })
-  .catch((err) => {
-    console.error('❌ MongoDB connection failed:', err.message);
-    process.exit(1);
-  });
+  .catch((err) => console.error('❌ MongoDB connection failed:', err.message));
+
+// ─── Export for Vercel ─────────────────────────────────
+module.exports = app;

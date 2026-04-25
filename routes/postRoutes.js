@@ -4,9 +4,15 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const { MAX_FILE_SIZE, UPLOAD_DIR } = require('../config/config');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { 
+  MAX_FILE_SIZE, 
+  CLOUDINARY_CLOUD_NAME, 
+  CLOUDINARY_API_KEY, 
+  CLOUDINARY_API_SECRET 
+} = require('../config/config');
 const { requireAuth, optionalAuth } = require('../middleware/auth');
 const {
   getPosts,
@@ -17,14 +23,20 @@ const {
   getPublicStats
 } = require('../controllers/postController');
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${uuidv4()}${ext}`);
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: CLOUDINARY_CLOUD_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET
+});
+
+// Configure Cloudinary Storage for Multer
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'community-bulletin',
+    allowed_formats: ['jpg', 'png', 'gif', 'webp'],
+    public_id: (req, file) => `${uuidv4()}`
   }
 });
 
