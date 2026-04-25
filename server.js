@@ -1,10 +1,10 @@
 /**
  * Community Bulletin Board — Local Development Server
  */
-require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const { PORT } = require('./config/config');
 const connectDB = require('./config/db');
 const dbMiddleware = require('./middleware/db');
 
@@ -15,7 +15,6 @@ const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // ─── Middleware ─────────────────────────────────────────
 app.use(cors());
@@ -52,7 +51,6 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Start Server ──────────────────────────────────────
-// Connect to DB and then start listening
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

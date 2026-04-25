@@ -1,7 +1,6 @@
 /**
  * Vercel Serverless Entry Point
  */
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const dbMiddleware = require('../middleware/db');
@@ -34,5 +33,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'An unexpected error occurred.' });
 });
 
-// ─── Export for Vercel ─────────────────────────────────
 module.exports = app;
