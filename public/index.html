@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Community Bulletin Board — Post events, announcements, jobs, and more for your community.">
-  <title>Community Bulletin Board</title>
+  <meta name="description" content="Community Bulletin Board — Your neighborhood hub for events, announcements, jobs, and community updates. Stay connected and informed.">
+  <title>Community Bulletin Board — Stay Connected</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,13 +15,22 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
   <!-- ═══════════ NAVBAR ═══════════ -->
   <nav class="navbar" id="navbar">
     <div class="navbar-inner">
       <a href="#" class="navbar-brand" id="nav-logo">
-        <span class="logo-icon">🏛️</span>
+        <span class="logo-icon">📌</span>
         <span class="logo-text">Bulletin<span class="logo-accent">Board</span></span>
       </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#hero" class="nav-link">Home</a></li>
+        <li><a href="#categories" class="nav-link">Categories</a></li>
+        <li><a href="#posts" class="nav-link">Posts</a></li>
+        <li><a href="#about-cta" class="nav-link">About</a></li>
+        <li><a href="#footer" class="nav-link">Contact</a></li>
+      </ul>
 
       <div class="navbar-search" id="navbar-search">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -32,7 +41,7 @@
       </div>
 
       <div class="navbar-actions" id="navbar-actions">
-        <!-- Filled dynamically by JS -->
+        <!-- Filled dynamically by auth.js -->
       </div>
 
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
@@ -41,78 +50,250 @@
     </div>
   </nav>
 
-  <!-- ═══════════ HERO ═══════════ -->
+  <!-- ═══════════ HERO SECTION ═══════════ -->
   <section class="hero" id="hero">
     <div class="hero-bg">
       <div class="hero-shape shape-1"></div>
       <div class="hero-shape shape-2"></div>
       <div class="hero-shape shape-3"></div>
     </div>
+    <div class="hero-orbs">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+    </div>
     <div class="hero-content">
+      <span class="hero-badge">🚀 Your Neighborhood Hub</span>
       <h1 class="hero-title">
         Your Community,<br>
-        <span class="gradient-text">Connected.</span>
+        <span class="gradient-text">Connected &amp; Informed.</span>
       </h1>
-      <p class="hero-subtitle">Share events, announcements, jobs, and more with your neighbors. Stay informed, stay connected.</p>
-      <button class="btn btn-primary btn-lg" id="hero-cta">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-          <path d="M12 5v14M5 12h14"></path>
-        </svg>
-        Create a Post
-      </button>
+      <p class="hero-subtitle">Share events, announcements, jobs, and more with your neighbors. Stay informed, stay engaged, and build a stronger community together.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" id="hero-cta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          Create a Post
+        </button>
+        <a href="#posts" class="btn btn-outline btn-lg">Explore Posts</a>
+      </div>
+      <div class="hero-stats" id="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number" id="stat-posts">0</span>
+          <span class="stat-label">Posts</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" id="stat-members">0</span>
+          <span class="stat-label">Members</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" id="stat-comments">0</span>
+          <span class="stat-label">Comments</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ═══════════ MAIN CONTENT ═══════════ -->
-  <main class="main-content" id="main-content">
-    <!-- Category Filter Bar -->
-    <div class="filter-bar" id="filter-bar">
-      <div class="filter-pills">
-        <button class="pill active" data-category="">All</button>
-        <button class="pill" data-category="Events">
-          <span class="pill-dot" style="background: #e94560"></span>Events
+  <!-- ═══════════ CATEGORIES SECTION ═══════════ -->
+  <section class="categories-section" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Browse</span>
+        <h2 class="section-title">Explore Categories</h2>
+        <p class="section-subtitle">Find what matters to your community — from local events to job openings.</p>
+      </div>
+      <div class="categories-grid">
+        <button class="category-card" data-category="Events" id="cat-events">
+          <div class="category-icon" style="--cat-color: #e94560; --cat-bg: rgba(233,69,96,0.12)"><span>🎉</span></div>
+          <div class="category-card-body">
+            <h3>Events</h3>
+            <p>Community gatherings, festivals, meetings and celebrations</p>
+            <span class="category-count" id="count-events">0 posts</span>
+          </div>
         </button>
-        <button class="pill" data-category="Announcements">
-          <span class="pill-dot" style="background: #f4a261"></span>Announcements
+        <button class="category-card" data-category="Announcements" id="cat-announcements">
+          <div class="category-icon" style="--cat-color: #f4a261; --cat-bg: rgba(244,162,97,0.12)"><span>📢</span></div>
+          <div class="category-card-body">
+            <h3>Announcements</h3>
+            <p>Important updates, notices, and community-wide alerts</p>
+            <span class="category-count" id="count-announcements">0 posts</span>
+          </div>
         </button>
-        <button class="pill" data-category="General">
-          <span class="pill-dot" style="background: #2ec4b6"></span>General
+        <button class="category-card" data-category="General" id="cat-general">
+          <div class="category-icon" style="--cat-color: #2ec4b6; --cat-bg: rgba(46,196,182,0.12)"><span>💬</span></div>
+          <div class="category-card-body">
+            <h3>General</h3>
+            <p>Open discussions, questions, and neighborhood chatter</p>
+            <span class="category-count" id="count-general">0 posts</span>
+          </div>
         </button>
-        <button class="pill" data-category="Jobs">
-          <span class="pill-dot" style="background: #7b68ee"></span>Jobs
+        <button class="category-card" data-category="Jobs" id="cat-jobs">
+          <div class="category-icon" style="--cat-color: #7b68ee; --cat-bg: rgba(123,104,238,0.12)"><span>💼</span></div>
+          <div class="category-card-body">
+            <h3>Jobs</h3>
+            <p>Career opportunities, freelance gigs and hiring posts</p>
+            <span class="category-count" id="count-jobs">0 posts</span>
+          </div>
         </button>
-        <button class="pill" data-category="Lost & Found">
-          <span class="pill-dot" style="background: #ff9ff3"></span>Lost &amp; Found
+        <button class="category-card" data-category="Lost &amp; Found" id="cat-lost-found">
+          <div class="category-icon" style="--cat-color: #ff9ff3; --cat-bg: rgba(255,159,243,0.12)"><span>🔍</span></div>
+          <div class="category-card-body">
+            <h3>Lost &amp; Found</h3>
+            <p>Report lost items or help reunite found belongings</p>
+            <span class="category-count" id="count-lost">0 posts</span>
+          </div>
         </button>
       </div>
+    </div>
+  </section>
 
-      <div class="sort-controls">
-        <select id="sort-select" class="sort-select">
-          <option value="latest">Latest First</option>
-          <option value="oldest">Oldest First</option>
-        </select>
+  <!-- ═══════════ POSTS SECTION ═══════════ -->
+  <section class="posts-section" id="posts">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Latest</span>
+        <h2 class="section-title">Community Posts</h2>
+        <p class="section-subtitle">See what's happening in your neighborhood right now.</p>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar" id="filter-bar">
+        <div class="filter-pills">
+          <button class="pill active" data-category="">All</button>
+          <button class="pill" data-category="Events">
+            <span class="pill-dot" style="background: var(--cat-events)"></span>Events
+          </button>
+          <button class="pill" data-category="Announcements">
+            <span class="pill-dot" style="background: var(--cat-announcements)"></span>Announcements
+          </button>
+          <button class="pill" data-category="General">
+            <span class="pill-dot" style="background: var(--cat-general)"></span>General
+          </button>
+          <button class="pill" data-category="Jobs">
+            <span class="pill-dot" style="background: var(--cat-jobs)"></span>Jobs
+          </button>
+          <button class="pill" data-category="Lost &amp; Found">
+            <span class="pill-dot" style="background: var(--cat-lost)"></span>Lost &amp; Found
+          </button>
+        </div>
+        <div class="sort-controls">
+          <select id="sort-select" class="sort-select">
+            <option value="latest">Latest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Posts Grid -->
+      <div class="posts-grid" id="posts-grid">
+        <!-- Skeleton loaders shown initially, then replaced by JS -->
+      </div>
+
+      <!-- Load More -->
+      <div class="load-more-container" id="load-more-container" style="display: none;">
+        <button class="btn btn-outline" id="load-more-btn">Load More Posts</button>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <div class="empty-icon">📭</div>
+        <h3>No posts yet</h3>
+        <p>Be the first to share something with the community!</p>
       </div>
     </div>
+  </section>
 
-    <!-- Posts Grid -->
-    <div class="posts-grid" id="posts-grid">
-      <!-- Skeleton loaders shown initially -->
+  <!-- ═══════════ CTA SECTION ═══════════ -->
+  <section class="cta-section" id="about-cta">
+    <div class="cta-bg">
+      <div class="cta-shape cta-shape-1"></div>
+      <div class="cta-shape cta-shape-2"></div>
     </div>
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">Have Something to Share?</h2>
+        <p class="cta-subtitle">Whether it's a community event, a job opening, or a lost pet — your post can make a difference. Join your neighbors already connecting here.</p>
+        <div class="cta-actions">
+          <button class="btn btn-primary btn-lg btn-glow" id="cta-post-btn">
+            <span>✍️</span> Create a Post
+          </button>
+          <a href="#categories" class="btn btn-outline btn-lg">Browse Categories</a>
+        </div>
+        <div class="cta-features">
+          <div class="cta-feature">
+            <span class="cta-feature-icon">⚡</span> Instant Publishing
+          </div>
+          <div class="cta-feature">
+            <span class="cta-feature-icon">🌍</span> Reach Your Neighbors
+          </div>
+          <div class="cta-feature">
+            <span class="cta-feature-icon">🔒</span> Safe &amp; Moderated
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Load More -->
-    <div class="load-more-container" id="load-more-container" style="display: none;">
-      <button class="btn btn-outline" id="load-more-btn">
-        Load More Posts
-      </button>
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="navbar-brand">
+            <span class="logo-icon">📌</span>
+            <span class="logo-text">Bulletin<span class="logo-accent">Board</span></span>
+          </a>
+          <p>Connecting communities, one post at a time. Your trusted neighborhood hub for events, news, and local updates.</p>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#categories">Categories</a></li>
+            <li><a href="#posts">Latest Posts</a></li>
+            <li><a href="#about-cta">About Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="#posts">Events</a></li>
+            <li><a href="#posts">Announcements</a></li>
+            <li><a href="#posts">Jobs</a></li>
+            <li><a href="#posts">Lost &amp; Found</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Community Guidelines</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 BulletinBoard. Made with ❤️ for communities everywhere.</p>
+      </div>
     </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" id="empty-state" style="display: none;">
-      <div class="empty-icon">📭</div>
-      <h3>No posts yet</h3>
-      <p>Be the first to share something with the community!</p>
-    </div>
-  </main>
+  </footer>
 
   <!-- ═══════════ AUTH MODAL ═══════════ -->
   <div class="modal-overlay" id="auth-modal">
@@ -234,6 +415,16 @@
     </div>
   </div>
 
+  <!-- ═══════════ PROFILE MODAL ═══════════ -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal profile-modal">
+      <button class="modal-close" id="profile-modal-close">&times;</button>
+      <div id="profile-content">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
   <!-- ═══════════ TOAST CONTAINER ═══════════ -->
   <div class="toast-container" id="toast-container"></div>
 
@@ -244,5 +435,6 @@
   <script src="/js/comments.js"></script>
   <script src="/js/posts.js"></script>
   <script src="/js/app.js"></script>
+
 </body>
 </html>

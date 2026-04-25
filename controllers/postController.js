@@ -262,4 +262,28 @@ async function deletePost(req, res) {
   }
 }
 
-module.exports = { getPosts, getPost, createPost, updatePost, deletePost };
+/**
+ * GET /api/posts/stats/public
+ * Returns aggregate stats for the public homepage
+ */
+async function getPublicStats(req, res) {
+  try {
+    const User = require('../models/User');
+
+    const [totalPosts, totalUsers, totalComments, categories] = await Promise.all([
+      Post.countDocuments(),
+      User.countDocuments(),
+      Comment.countDocuments(),
+      Post.aggregate([
+        { $group: { _id: '$category', count: { $sum: 1 } } }
+      ])
+    ]);
+
+    res.json({ totalPosts, totalUsers, totalComments, categories });
+  } catch (err) {
+    console.error('Public stats error:', err);
+    res.status(500).json({ error: 'Failed to load stats.' });
+  }
+}
+
+module.exports = { getPosts, getPost, createPost, updatePost, deletePost, getPublicStats };

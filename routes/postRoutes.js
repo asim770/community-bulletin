@@ -13,7 +13,8 @@ const {
   getPost,
   createPost,
   updatePost,
-  deletePost
+  deletePost,
+  getPublicStats
 } = require('../controllers/postController');
 
 // Configure multer for image uploads
@@ -59,6 +60,7 @@ function handleUpload(req, res, next) {
 
 // Routes
 router.get('/', optionalAuth, getPosts);
+router.get('/stats/public', getPublicStats);
 router.get('/:id', optionalAuth, getPost);
 router.post('/', requireAuth, handleUpload, createPost);
 router.put('/:id', requireAuth, handleUpload, updatePost);

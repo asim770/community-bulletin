@@ -58,6 +58,10 @@ const API = {
   },
 
   // ─── Posts ──────────────────────────────────────────────
+  getPublicStats() {
+    return this.request('GET', '/posts/stats/public');
+  },
+
   getPosts(params = {}) {
     const query = new URLSearchParams();
     if (params.category) query.set('category', params.category);
