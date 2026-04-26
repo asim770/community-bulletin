@@ -1,12 +1,16 @@
 /**
  * Community Bulletin Board — Local Development Server
- * This file is ONLY used for local development (not on Vercel)
  */
-require('dotenv').config();
+require("dotenv").config();
 const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 const path = require('path');
 const cors = require('cors');
+const { PORT } = require('./config/config');
 const connectDB = require('./config/db');
+const dbMiddleware = require('./middleware/db');
+const configureChatSockets = require('./sockets/chatSocket');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -15,7 +19,14 @@ const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: { origin: '*' }
+});
+
+// Configure Chat Sockets
+configureChatSockets(io);
+
 
 // ─── Middleware ─────────────────────────────────────────
 app.use(cors());
@@ -26,11 +37,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
+// Database connection middleware (Only for API routes)
+app.use('/api', dbMiddleware);
+
 // ─── API Routes ────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/posts', commentRoutes);
 app.use('/api/posts', likeRoutes);
+
+// ─── Home Route ────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // ─── SPA Fallback ──────────────────────────────────────
 app.get('*', (req, res) => {
@@ -45,11 +64,9 @@ app.use((err, req, res, next) => {
 
 // ─── Start Server ──────────────────────────────────────
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
   });
-}).catch(err => {
-  console.error('Failed to start server:', err.message);
 });
 
 module.exports = app;
