@@ -1,31 +1,35 @@
 /**
  * Database connection utility for serverless environments
- * Implements a singleton pattern to prevent multiple connections
+ * Uses global caching to reuse connections across invocations
  */
 const mongoose = require('mongoose');
-const { MONGO_URI } = require('./config.js');
 
-// Cache the connection
-let cached = global.mongoose;
+let cached = global._mongooseConnection;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = global._mongooseConnection = { conn: null, promise: null };
 }
 
 async function connectDB() {
+  // Return existing connection
   if (cached.conn) {
     return cached.conn;
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false, // Disable buffering to fail fast if connection is not ready
-    };
+  // Get URI from environment
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    throw new Error('MONGO_URI environment variable is not set');
+  }
 
+  // Create new connection if none exists
+  if (!cached.promise) {
     console.log('📡 Connecting to MongoDB...');
-    cached.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(uri, {
+      bufferCommands: false,
+    }).then((m) => {
       console.log('✅ Connected to MongoDB');
-      return mongoose;
+      return m;
     });
   }
 
