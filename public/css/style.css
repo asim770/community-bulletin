@@ -796,7 +796,7 @@ img { max-width: 100%; display: block; }
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   :root { --navbar-height: 64px; }
-  .navbar-inner { padding: 0 16px; }
+  .navbar-inner { padding: 0 16px; justify-content: space-between; }
   .nav-links { display: none; }
   .navbar-search { display: none; }
   .navbar-search.mobile-open {

@@ -123,7 +123,7 @@ const Like = require('../models/Like');
 
 async function getProfile(req, res) {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
     
     // Count total posts
     const postCount = await Post.countDocuments({ userId });
