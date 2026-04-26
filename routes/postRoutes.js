@@ -4,7 +4,6 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
 const cloudinary = require('cloudinary').v2;
 const { MAX_FILE_SIZE } = require('../config/config');
 const { requireAuth, optionalAuth } = require('../middleware/auth');
