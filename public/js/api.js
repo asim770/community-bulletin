@@ -57,6 +57,10 @@ const API = {
     return this.request('GET', '/auth/me');
   },
 
+  getProfile() {
+    return this.request('GET', '/auth/profile');
+  },
+
   // ─── Posts ──────────────────────────────────────────────
   getPublicStats() {
     return this.request('GET', '/posts/stats/public');

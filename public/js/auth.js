@@ -42,7 +42,7 @@ const Auth = {
     if (this.isLoggedIn()) {
       const user = this.currentUser;
       actions.innerHTML = `
-        <div class="nav-user-info">
+        <div class="nav-user-info" id="nav-user-info" style="cursor: pointer;" title="Open Profile">
           <div class="nav-avatar">${getInitials(user.username)}</div>
           <span class="nav-username">${escapeHtml(user.username)}</span>
           ${user.role === 'admin' ? '<span class="nav-role-badge">Admin</span>' : ''}
@@ -53,11 +53,10 @@ const Auth = {
           </svg>
           New Post
         </button>
-        <button class="btn btn-ghost btn-sm" id="nav-logout-btn">Log Out</button>
       `;
 
       document.getElementById('nav-create-btn').addEventListener('click', () => Posts.openCreateModal());
-      document.getElementById('nav-logout-btn').addEventListener('click', () => this.logout());
+      document.getElementById('nav-user-info').addEventListener('click', () => this.openProfileDashboard());
     } else {
       actions.innerHTML = `
         <button class="btn btn-secondary btn-sm" id="nav-login-btn">Log In</button>
@@ -163,8 +162,55 @@ const Auth = {
     localStorage.removeItem('bb_token');
     this.currentUser = null;
     this.updateUI();
+    document.getElementById('profile-modal').classList.remove('active');
     showToast('Logged out successfully.', 'info');
     Posts.loadPosts(); // Refresh to clear like status
+  },
+
+  // Open Profile Dashboard
+  async openProfileDashboard() {
+    const modal = document.getElementById('profile-modal');
+    const content = document.getElementById('profile-content');
+    
+    modal.classList.add('active');
+    content.innerHTML = `<div class="loading-spinner"></div><p style="text-align:center; margin-top:10px;">Loading profile...</p>`;
+
+    try {
+      const data = await API.getProfile();
+      const user = data.user;
+      const stats = data.stats;
+
+      content.innerHTML = `
+        <div class="profile-header">
+          <div class="profile-avatar">${getInitials(user.username)}</div>
+          <h2 class="profile-username">${escapeHtml(user.username)}</h2>
+          <p class="profile-email">${escapeHtml(user.email)}</p>
+          ${user.role === 'admin' ? '<span class="nav-role-badge" style="margin-top:8px;">Admin</span>' : ''}
+        </div>
+        
+        <div class="profile-stats-grid">
+          <div class="profile-stat-card">
+            <h3>${stats.posts}</h3>
+            <p>Total Posts</p>
+          </div>
+          <div class="profile-stat-card">
+            <h3>${stats.likesReceived}</h3>
+            <p>Likes Received</p>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn btn-danger btn-full" id="profile-logout-btn">
+            Log Out
+          </button>
+        </div>
+      `;
+
+      document.getElementById('profile-logout-btn').addEventListener('click', () => this.logout());
+
+    } catch (err) {
+      content.innerHTML = `<p class="error-msg text-center">Failed to load profile. Please try again.</p>`;
+    }
   },
 
   // Bind event listeners
@@ -183,5 +229,13 @@ const Auth = {
     // Form submissions
     document.getElementById('login-form').addEventListener('submit', (e) => this.handleLogin(e));
     document.getElementById('register-form').addEventListener('submit', (e) => this.handleRegister(e));
+
+    // Profile modal close
+    document.getElementById('profile-modal-close').addEventListener('click', () => {
+      document.getElementById('profile-modal').classList.remove('active');
+    });
+    document.getElementById('profile-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) document.getElementById('profile-modal').classList.remove('active');
+    });
   }
 };

@@ -114,4 +114,38 @@ function getMe(req, res) {
   res.json({ user: req.user });
 }
 
-module.exports = { register, login, getMe };
+/**
+ * GET /api/auth/profile
+ * Get user profile dashboard stats
+ */
+const Post = require('../models/Post');
+const Like = require('../models/Like');
+
+async function getProfile(req, res) {
+  try {
+    const userId = req.user.userId;
+    
+    // Count total posts
+    const postCount = await Post.countDocuments({ userId });
+    
+    // Get all posts by this user
+    const userPosts = await Post.find({ userId }).select('_id');
+    const postIds = userPosts.map(p => p._id);
+    
+    // Count total likes on those posts
+    const likesCount = await Like.countDocuments({ postId: { $in: postIds } });
+
+    res.json({
+      user: req.user,
+      stats: {
+        posts: postCount,
+        likesReceived: likesCount
+      }
+    });
+  } catch (err) {
+    console.error('Profile error:', err);
+    res.status(500).json({ error: 'Failed to load profile stats.' });
+  }
+}
+
+module.exports = { register, login, getMe, getProfile };
