@@ -36,7 +36,7 @@ const postSchema = new mongoose.Schema({
     default: null
   }
 }, {
-  timestamps: true // adds createdAt and updatedAt automatically
+  timestamps: true
 });
 
 // Add text index for search functionality

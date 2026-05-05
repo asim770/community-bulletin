@@ -2,6 +2,7 @@
  * Database connection utility for serverless environments
  * Uses global caching to reuse connections across invocations
  */
+
 const mongoose = require('mongoose');
 
 let cached = global._mongooseConnection;
